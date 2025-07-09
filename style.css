@@ -1,0 +1,51 @@
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: #f1f5f9; /* slate-100 */
+}
+.mockup-container {
+    width: 100%;
+    max-width: 400px;
+    height: 820px;
+    background-color: #1e293b; /* slate-800 */
+    border-radius: 40px;
+    padding: 14px;
+    box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+}
+.screen {
+    background-color: #f8fafc; /* slate-50 */
+    width: 100%;
+    height: 100%;
+    border-radius: 30px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+#toast-notification {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: rgba(17, 24, 39, 0.9);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 20px;
+    font-size: 14px;
+    z-index: 100;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s, visibility 0.3s;
+}
+#toast-notification.show {
+    opacity: 1;
+    visibility: visible;
+}
+#referral-code-status {
+    height: 1.25rem; /* h-5 */
+    font-size: 0.75rem; /* text-xs */
+    font-weight: 500; /* font-medium */
+    margin-top: 0.25rem; /* mt-1 */
+}
+
+/* Tailwind CSS classes that were used in the HTML will be applied by the Tailwind CDN script.
+   If specific overrides or additional custom styles are needed, they can be added here. */
