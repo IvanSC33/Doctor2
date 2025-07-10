@@ -1,18 +1,18 @@
 body {
     font-family: 'Inter', sans-serif;
-    background-color: #f1f5f9; /* slate-100 */
+    background-color: #f0f2f5;
 }
 .mockup-container {
     width: 100%;
     max-width: 400px;
-    height: 820px;
-    background-color: #1e293b; /* slate-800 */
+    height: 844px;
+    background-color: #1a1a1a;
     border-radius: 40px;
     padding: 14px;
-    box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+    box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.4);
 }
 .screen {
-    background-color: #f8fafc; /* slate-50 */
+    background-color: #f0f2f5;
     width: 100%;
     height: 100%;
     border-radius: 30px;
@@ -21,31 +21,216 @@ body {
     flex-direction: column;
     position: relative;
 }
+.content {
+    flex-grow: 1;
+    overflow-y: auto;
+    padding: 16px;
+}
+.bottom-nav {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    background-color: #ffffff;
+    border-top: 1px solid #e5e7eb;
+    padding-top: 8px;
+    padding-bottom: 8px;
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    z-index: 50;
+}
+.nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 10px;
+    font-weight: 600;
+    color: #6b7280;
+    cursor: pointer;
+    flex: 1;
+    text-align: center;
+    transition: color 0.2s;
+}
+.nav-item.active {
+    color: #005A9C;
+}
+.nav-item i {
+    font-size: 24px;
+    margin-bottom: 2px;
+}
 #toast-notification {
     position: absolute;
-    bottom: 20px;
+    bottom: 80px;
     left: 50%;
     transform: translateX(-50%);
     background-color: rgba(17, 24, 39, 0.9);
     color: white;
-    padding: 10px 20px;
-    border-radius: 20px;
+    padding: 12px 24px;
+    border-radius: 8px;
     font-size: 14px;
+    font-weight: 500;
     z-index: 100;
     opacity: 0;
     visibility: hidden;
-    transition: opacity 0.3s, visibility 0.3s;
+    transition: opacity 0.3s, visibility 0.3s, transform 0.3s;
 }
 #toast-notification.show {
     opacity: 1;
     visibility: visible;
+    transform: translateX(-50%) translateY(0);
 }
-#referral-code-status {
-    height: 1.25rem; /* h-5 */
-    font-size: 0.75rem; /* text-xs */
-    font-weight: 500; /* font-medium */
-    margin-top: 0.25rem; /* mt-1 */
+.modal-overlay {
+    position: absolute;
+    inset: 0;
+    background-color: rgba(0,0,0,0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 60;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
 }
-
-/* Tailwind CSS classes that were used in the HTML will be applied by the Tailwind CDN script.
-   If specific overrides or additional custom styles are needed, they can be added here. */
+.modal-overlay.visible {
+    opacity: 1;
+    visibility: visible;
+}
+.modal-content {
+    background-color: white;
+    padding: 24px;
+    border-radius: 16px;
+    width: 90%;
+    max-width: 340px;
+}
+.fab {
+    position: absolute;
+    bottom: 90px;
+    right: 20px;
+    background-color: #005A9C;
+    color: white;
+    width: 56px;
+    height: 56px;
+    border-radius: 9999px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+    z-index: 40;
+    cursor: pointer;
+}
+.fab i {
+    font-size: 28px;
+}
+.online-toggle-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.online-status-text {
+    font-weight: 600;
+    font-size: 12px;
+    transition: color 0.3s;
+}
+.online-status-text.available {
+    color: #10b981;
+}
+.online-status-text.unavailable {
+    color: #ef4444;
+}
+.online-toggle.available {
+    background-color: #10b981;
+}
+.ai-suggestion-card {
+    background-color: #eef2ff;
+    border: 1px solid #c7d2fe;
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 8px;
+    animation: fadeIn 0.5s ease;
+}
+.ai-confirmed-card {
+    background-color: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 8px;
+}
+.textarea-container {
+    position: relative;
+}
+.dictate-icon-btn {
+    position: absolute;
+    bottom: 8px;
+    right: 8px;
+    background-color: #e5e7eb;
+    border-radius: 9999px;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #4b5563;
+    cursor: pointer;
+}
+.segmented-control {
+    display: flex;
+    background-color: #e5e7eb;
+    padding: 4px;
+    border-radius: 8px;
+}
+.segmented-control button {
+    flex: 1;
+    padding: 8px;
+    border: none;
+    background-color: transparent;
+    color: #4b5563;
+    font-weight: 600;
+    font-size: 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+}
+.segmented-control button.active {
+    background-color: #ffffff;
+    color: #005A9C;
+    box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+}
+.profile-menu-item {
+    background-color: white;
+    padding: 16px;
+    border-radius: 8px;
+    border: 1px solid #e5e7eb;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-weight: 600;
+    color: #374151;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+.profile-menu-item:hover {
+    background-color: #f9fafb;
+}
+.profile-menu-item i {
+    color: #6b7280;
+}
+.day-selector-btn {
+    border: 1px solid #cbd5e1;
+    color: #475569;
+}
+.day-selector-btn.selected {
+    background-color: #005A9C;
+    border-color: #005A9C;
+    color: #ffffff;
+}
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeOut {
+    from { opacity: 1; }
+    to { opacity: 0; }
+}
+.fade-out {
+    animation: fadeOut 0.5s ease forwards;
+}

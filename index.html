@@ -3,84 +3,147 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registro de Médicos - Vitalis AI</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <title>Vitalis AI - Prototipo Médico Rediseñado</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/phosphor-icons"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="style.css">
 </head>
 <body class="flex justify-center items-center min-h-screen p-4">
 
     <div class="mockup-container">
         <div class="screen">
-            <div id="registration-flow" class="flex flex-col h-full">
-                <!-- Header -->
-                <div class="p-6 pb-4 text-center">
-                    <h1 class="text-2xl font-bold text-slate-800">Únete a Vitalis AI</h1>
-                    <p class="text-slate-500 mt-1">Completa tus datos para empezar a validar tu perfil.</p>
+            <!-- Header (Visible en pantallas principales) -->
+            <div id="header" class="flex items-center justify-between p-4 bg-white border-b border-gray-200">
+                <div>
+                    <p class="text-sm text-gray-500">Bienvenida de nuevo,</p>
+                    <h1 class="font-bold text-xl text-gray-800">Dra. Ana Pérez</h1>
                 </div>
+                <div class="flex items-center space-x-3">
+                    <div class="online-toggle-container">
+                        <span id="online-status-text" class="online-status-text unavailable">No Disponible</span>
+                        <div id="online-toggle" class="relative inline-flex items-center h-6 rounded-full w-11 cursor-pointer bg-gray-300 transition-colors">
+                            <span id="online-toggle-indicator" class="inline-block w-4 h-4 transform bg-white rounded-full transition-transform" style="transform: translateX(4px);"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-                <!-- Main Content: Form -->
-                <div class="flex-grow overflow-y-auto px-6 space-y-4">
-                    <input type="text" placeholder="Nombre completo" class="w-full p-3 border border-slate-300 rounded-lg" required>
-                    <input type="tel" placeholder="Número de celular (+51)" class="w-full p-3 border border-slate-300 rounded-lg" required>
-                    <input type="text" placeholder="Número de CMP" class="w-full p-3 border border-slate-300 rounded-lg" required>
-                    <div>
-                        <label class="text-sm font-medium text-slate-700">Adjuntar DNI (ambas caras)</label>
-                        <input type="file" class="w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-teal-50 file:text-teal-700 hover:file:bg-teal-100" required/>
+            <!-- Main Content Area -->
+            <div id="main-content" class="flex-grow overflow-y-auto pb-20">
+
+                <!-- Screen: Welcome -->
+                <div id="screen-welcome" class="hidden h-full flex flex-col items-center justify-center text-center p-6 bg-white"></div>
+
+                <!-- Screen: Onboarding / Login -->
+                <div id="screen-onboarding" class="hidden h-full flex flex-col items-center justify-center p-6 bg-slate-50"></div>
+
+                <!-- Screen: Inicio (Centro de Mando) -->
+                <div id="screen-home" class="content space-y-6">
+                    <!-- Próxima Consulta -->
+                    <div id="next-consultation-container">
+                        <!-- Se renderiza dinámicamente -->
                     </div>
+
+                    <!-- Bandeja de Tareas -->
                     <div>
-                        <input id="referral-code-input" type="text" placeholder="Código de referido (opcional)" class="w-full p-3 border border-slate-300 rounded-lg">
-                        <p id="referral-code-status"></p>
+                        <h2 class="font-bold text-gray-800 text-xl mb-3">Bandeja de Tareas</h2>
+                        <div id="tasks-container" class="space-y-3">
+                            <!-- Tareas se inyectan aquí -->
+                        </div>
                     </div>
-                    <div class="pt-4">
-                        <div class="flex items-start">
-                            <input id="accept-terms" type="checkbox" class="h-4 w-4 mt-1 text-teal-600 border-slate-300 rounded focus:ring-teal-500">
-                            <label for="accept-terms" class="ml-2 block text-xs text-slate-600">
-                                He leído y acepto los <a href="#" class="font-semibold text-teal-600 hover:underline">Términos y Condiciones</a> y la <a href="#" class="font-semibold text-teal-600 hover:underline">Política de Privacidad</a> de Vitalis AI.
-                            </label>
+
+                    <!-- Resumen de Actividad -->
+                    <div>
+                        <h2 class="font-bold text-gray-800 text-xl mb-3">Resumen de Actividad</h2>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="bg-white p-4 rounded-lg border border-gray-200">
+                                <p class="text-sm font-semibold text-gray-500">Consultas (Hoy)</p>
+                                <p id="consultation-count" class="text-3xl font-bold text-gray-800 mt-1">3</p>
+                            </div>
+                            <div class="bg-white p-4 rounded-lg border border-gray-200">
+                                <p class="text-sm font-semibold text-gray-500">Ingresos (Mes)</p>
+                                <p id="income-count" class="text-3xl font-bold text-gray-800 mt-1">S/ 9,300</p>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Footer: Navigation Buttons -->
-                <div class="p-6 pt-4">
-                    <button id="submit-btn" class="w-full bg-teal-600 text-white py-3 rounded-lg font-semibold">Registrarse y Validar Firma</button>
-                </div>
+                <!-- Screen: Agenda -->
+                <div id="screen-agenda" class="hidden content"></div>
+
+                <!-- Screen: Pacientes -->
+                <div id="screen-patients" class="hidden content"></div>
+
+                <!-- Screen: Historia Clínica -->
+                <div id="screen-patient-history" class="hidden content"></div>
+
+                <!-- Screen: Perfil -->
+                <div id="screen-profile" class="hidden content"></div>
+
+                <!-- Profile Sub-Screens -->
+                <div id="screen-financial" class="hidden content flex-col"></div>
+                <div id="screen-development" class="hidden content"></div>
+                <div id="screen-security" class="hidden content"></div>
+                <div id="screen-support" class="hidden content"></div>
+                <div id="screen-referrals" class="hidden content"></div>
+                <div id="screen-rewards" class="hidden content"></div>
+                <div id="screen-community-forum" class="hidden content"></div>
+                <div id="screen-forum-topic" class="hidden content"></div>
+
+
+                <!-- Pantallas de Flujo (sin nav) -->
+                <div id="screen-waiting-room" class="hidden h-full flex flex-col items-center justify-center text-center p-6 bg-white"></div>
+                <div id="screen-consultation" class="hidden h-full flex flex-col bg-gray-900 text-white"></div>
+                <div id="screen-review-sign" class="hidden content"></div>
+
+                <!-- NEW SCREENS FOR REGISTER/FORGOT PASSWORD -->
+                <div id="screen-register" class="hidden content bg-slate-50"></div>
+                <div id="screen-verify-signature" class="hidden h-full flex flex-col items-center justify-center p-6 bg-slate-50"></div>
+                <div id="screen-register-success" class="hidden h-full flex flex-col items-center justify-center text-center p-6 bg-white"></div>
+                <div id="screen-forgot-password" class="hidden h-full flex flex-col items-center justify-center p-6 bg-slate-50"></div>
+                <div id="screen-forgot-success" class="hidden h-full flex flex-col items-center justify-center text-center p-6 bg-white"></div>
+
             </div>
 
-            <!-- Final Screen: Validation Pending -->
-            <div id="final-screen" class="hidden h-full flex flex-col items-center justify-center text-center p-6">
-                <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4">
-                    <span class="text-3xl text-green-600">✔</span>
-                </div>
-                <h2 class="text-xl font-bold text-slate-800">¡Registro Enviado!</h2>
-                <p class="text-slate-600 mt-2">Gracias por unirte a Vitalis AI. Nuestro equipo administrativo validará tus credenciales y documentos.</p>
-                <p class="text-sm text-slate-500 mt-4">Recibirás una notificación por correo y SMS en un plazo de 24-48 horas una vez que tu perfil sea aprobado y habilitado para atender citas.</p>
-            </div>
+            <!-- Floating Action Button (FAB) -->
+            <button id="fab-ai" class="fab">
+                <i class="ph-brain"></i>
+            </button>
 
-            <!-- Signature Modal -->
-            <div id="signature-modal" class="hidden fixed inset-0 bg-black/60 flex items-center justify-center p-4 z-50">
-                <div class="bg-white rounded-2xl p-6 max-w-sm w-full text-center">
-                    <h2 class="text-xl font-bold text-slate-800">Validación de Firma</h2>
-                    <p class="text-slate-600 mt-2 text-sm">Para su seguridad, hemos enviado un código de 6 dígitos a su celular <span id="user-phone" class="font-bold">+51 *** *** ***</span>.</p>
-                    <div class="flex justify-center gap-2 my-6">
-                        <input type="text" maxlength="1" class="w-12 h-14 text-center text-2xl font-bold border-2 border-slate-300 rounded-lg focus:border-teal-500 focus:ring-teal-500" />
-                        <input type="text" maxlength="1" class="w-12 h-14 text-center text-2xl font-bold border-2 border-slate-300 rounded-lg focus:border-teal-500 focus:ring-teal-500" />
-                        <input type="text" maxlength="1" class="w-12 h-14 text-center text-2xl font-bold border-2 border-slate-300 rounded-lg focus:border-teal-500 focus:ring-teal-500" />
-                        <input type="text" maxlength="1" class="w-12 h-14 text-center text-2xl font-bold border-2 border-slate-300 rounded-lg focus:border-teal-500 focus:ring-teal-500" />
-                        <input type="text" maxlength="1" class="w-12 h-14 text-center text-2xl font-bold border-2 border-slate-300 rounded-lg focus:border-teal-500 focus:ring-teal-500" />
-                        <input type="text" maxlength="1" class="w-12 h-14 text-center text-2xl font-bold border-2 border-slate-300 rounded-lg focus:border-teal-500 focus:ring-teal-500" />
-                    </div>
-                    <p id="autofill-message" class="text-xs text-slate-500 h-4"></p>
-                    <button id="confirm-signature-btn" class="w-full bg-teal-600 text-white py-3 rounded-lg font-semibold mt-4">Confirmar Firma</button>
-                    <button id="close-signature-modal" class="text-sm text-slate-600 mt-4">Cancelar</button>
-                </div>
-            </div>
+            <!-- Modals container -->
+            <div id="modal-container"></div>
 
+            <!-- Bottom Navigation -->
+            <nav id="bottom-nav" class="bottom-nav">
+                <div id="nav-home" class="nav-item active"><i class="ph-house-fill"></i><span>Inicio</span></div>
+                <div id="nav-agenda" class="nav-item"><i class="ph-calendar"></i><span>Agenda</span></div>
+                <div id="nav-patients" class="nav-item"><i class="ph-users"></i><span>Pacientes</span></div>
+                <div id="nav-profile" class="nav-item"><i class="ph-user"></i><span>Perfil</span></div>
+            </nav>
+
+            <!-- Toast Notification -->
             <div id="toast-notification"></div>
         </div>
     </div>
 
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="script.js"></script>
+    <script type="module" src="js/store.js"></script>
+    <script type="module" src="js/ui.js"></script>
+    <script type="module" src="js/navigation.js"></script>
+    <script type="module" src="js/auth.js"></script>
+    <script type="module" src="js/home.js"></script>
+    <script type="module" src="js/agenda.js"></script>
+    <script type="module" src="js/patients.js"></script>
+    <script type="module" src="js/profile.js"></script>
+    <script type="module" src="js/profileFinancial.js"></script>
+    <script type="module" src="js/profileDevelopment.js"></script>
+    <script type="module" src="js/profileSecurity.js"></script>
+    <script type="module" src="js/profileSupport.js"></script>
+    <script type="module" src="js/profileRewards.js"></script>
+    <script type="module" src="js/communityForum.js"></script>
+    <script type="module" src="js/consultation.js"></script>
+    <script type="module" src="script.js"></script>
 </body>
 </html>
