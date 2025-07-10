@@ -16,7 +16,7 @@
     <div class="mockup-container">
         <div class="screen">
             <!-- Header (Visible en pantallas principales) -->
-            <div id="header" class="flex items-center justify-between p-4 bg-white border-b border-gray-200">
+            <div id="header" class="flex items-center justify-between p-4 bg-white border-b border-gray-200" style="display: none;">
                 <div>
                     <p class="text-sm text-gray-500">Bienvenida de nuevo,</p>
                     <h1 class="font-bold text-xl text-gray-800">Dra. Ana Pérez</h1>
@@ -32,54 +32,53 @@
             </div>
 
             <!-- Main Content Area -->
-            <div id="main-content" class="flex-grow overflow-y-auto pb-20">
+            <div id="main-content" class="flex-grow overflow-y-auto">
 
-                <!-- Screen: Welcome -->
-                <div id="screen-welcome" class="hidden h-full flex flex-col items-center justify-center text-center p-6 bg-white"></div>
+                <!-- Screen: Landing (New Initial Screen) -->
+                <div id="screen-landing" class="flex-grow overflow-y-auto h-full flex flex-col">
+                    <main id="main-container" class="flex-grow overflow-y-auto h-full flex flex-col">
+                        <div class="screen-section content flex flex-col h-full text-center p-6">
+                            <div class="flex-grow flex flex-col justify-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="heart-pulse" class="lucide lucide-heart-pulse w-16 h-16 text-blue-500 mx-auto mb-4"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"></path><path d="M3.22 12H9.5l.5-1 2 4.5 2-7 1.5 3.5h5.27"></path></svg>
+                                <h1 class="text-3xl font-bold text-gray-800">Tu salud, en un solo lugar</h1>
+                                <p class="text-gray-500 mt-2 mb-8">Toma el control de tus citas, tratamientos y bienestar con Vitalis.</p>
+                            </div>
+                            <div class="space-y-3 pb-6"> {/* Added padding bottom */}
+                                <button class="btn-primary w-full !bg-white !text-gray-800 border border-gray-300 action-btn" data-action="login-google">
+                                    <svg class="w-5 h-5 mr-3" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"></path><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"></path><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"></path><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"></path><path d="M1 1h22v22H1z" fill="none"></path></svg>
+                                    Continuar con Google
+                                </button>
+                                <button class="btn-primary w-full action-btn" data-action="go-to-screen" data-target-screen="screen-email-login">
+                                    Continuar con Correo
+                                </button>
+                                <p class="text-sm text-gray-600 pt-4">¿No tienes una cuenta? <a href="#" class="font-bold text-blue-500 action-btn" data-action="go-to-screen" data-target-screen="screen-register">Regístrate</a></p>
+                            </div>
+                        </div>
+                    </main>
+                </div>
 
-                <!-- Screen: Onboarding / Login -->
+                <!-- Screen: Email Login (New) -->
+                <div id="screen-email-login" class="hidden content h-full flex flex-col p-6 bg-slate-50"></div>
+
+                <!-- Screen: Onboarding / Login (Original, will be replaced by screen-email-login or similar) -->
                 <div id="screen-onboarding" class="hidden h-full flex flex-col items-center justify-center p-6 bg-slate-50"></div>
 
                 <!-- Screen: Inicio (Centro de Mando) -->
-                <div id="screen-home" class="content space-y-6">
+                <div id="screen-home" class="hidden content space-y-6">
                     <!-- Próxima Consulta -->
-                    <div id="next-consultation-container">
-                        <!-- Se renderiza dinámicamente -->
-                    </div>
-
+                    <div id="next-consultation-container"></div>
                     <!-- Bandeja de Tareas -->
-                    <div>
-                        <h2 class="font-bold text-gray-800 text-xl mb-3">Bandeja de Tareas</h2>
-                        <div id="tasks-container" class="space-y-3">
-                            <!-- Tareas se inyectan aquí -->
-                        </div>
-                    </div>
-
+                    <div><h2 class="font-bold text-gray-800 text-xl mb-3">Bandeja de Tareas</h2><div id="tasks-container" class="space-y-3"></div></div>
                     <!-- Resumen de Actividad -->
-                    <div>
-                        <h2 class="font-bold text-gray-800 text-xl mb-3">Resumen de Actividad</h2>
-                        <div class="grid grid-cols-2 gap-4">
-                            <div class="bg-white p-4 rounded-lg border border-gray-200">
-                                <p class="text-sm font-semibold text-gray-500">Consultas (Hoy)</p>
-                                <p id="consultation-count" class="text-3xl font-bold text-gray-800 mt-1">3</p>
-                            </div>
-                            <div class="bg-white p-4 rounded-lg border border-gray-200">
-                                <p class="text-sm font-semibold text-gray-500">Ingresos (Mes)</p>
-                                <p id="income-count" class="text-3xl font-bold text-gray-800 mt-1">S/ 9,300</p>
-                            </div>
-                        </div>
-                    </div>
+                    <div><h2 class="font-bold text-gray-800 text-xl mb-3">Resumen de Actividad</h2><div class="grid grid-cols-2 gap-4"><div class="bg-white p-4 rounded-lg border border-gray-200"><p class="text-sm font-semibold text-gray-500">Consultas (Hoy)</p><p id="consultation-count" class="text-3xl font-bold text-gray-800 mt-1">0</p></div><div class="bg-white p-4 rounded-lg border border-gray-200"><p class="text-sm font-semibold text-gray-500">Ingresos (Mes)</p><p id="income-count" class="text-3xl font-bold text-gray-800 mt-1">S/ 0</p></div></div></div>
                 </div>
 
                 <!-- Screen: Agenda -->
                 <div id="screen-agenda" class="hidden content"></div>
-
                 <!-- Screen: Pacientes -->
                 <div id="screen-patients" class="hidden content"></div>
-
                 <!-- Screen: Historia Clínica -->
                 <div id="screen-patient-history" class="hidden content"></div>
-
                 <!-- Screen: Perfil -->
                 <div id="screen-profile" class="hidden content"></div>
 
@@ -93,14 +92,13 @@
                 <div id="screen-community-forum" class="hidden content"></div>
                 <div id="screen-forum-topic" class="hidden content"></div>
 
-
                 <!-- Pantallas de Flujo (sin nav) -->
                 <div id="screen-waiting-room" class="hidden h-full flex flex-col items-center justify-center text-center p-6 bg-white"></div>
                 <div id="screen-consultation" class="hidden h-full flex flex-col bg-gray-900 text-white"></div>
                 <div id="screen-review-sign" class="hidden content"></div>
 
-                <!-- NEW SCREENS FOR REGISTER/FORGOT PASSWORD -->
-                <div id="screen-register" class="hidden content bg-slate-50"></div>
+                <!-- Auth Flow Screens (Register, Verify, Success, Forgot) -->
+                <div id="screen-register" class="hidden content bg-slate-50 p-6"></div>
                 <div id="screen-verify-signature" class="hidden h-full flex flex-col items-center justify-center p-6 bg-slate-50"></div>
                 <div id="screen-register-success" class="hidden h-full flex flex-col items-center justify-center text-center p-6 bg-white"></div>
                 <div id="screen-forgot-password" class="hidden h-full flex flex-col items-center justify-center p-6 bg-slate-50"></div>
@@ -109,15 +107,13 @@
             </div>
 
             <!-- Floating Action Button (FAB) -->
-            <button id="fab-ai" class="fab">
-                <i class="ph-brain"></i>
-            </button>
+            <button id="fab-ai" class="fab" style="display: none;"><i class="ph-brain"></i></button>
 
             <!-- Modals container -->
             <div id="modal-container"></div>
 
             <!-- Bottom Navigation -->
-            <nav id="bottom-nav" class="bottom-nav">
+            <nav id="bottom-nav" class="bottom-nav" style="display: none;">
                 <div id="nav-home" class="nav-item active"><i class="ph-house-fill"></i><span>Inicio</span></div>
                 <div id="nav-agenda" class="nav-item"><i class="ph-calendar"></i><span>Agenda</span></div>
                 <div id="nav-patients" class="nav-item"><i class="ph-users"></i><span>Pacientes</span></div>
@@ -141,9 +137,11 @@
     <script type="module" src="js/profileDevelopment.js"></script>
     <script type="module" src="js/profileSecurity.js"></script>
     <script type="module" src="js/profileSupport.js"></script>
+    <script type="module" src="js/profileReferrals.js"></script>
     <script type="module" src="js/profileRewards.js"></script>
     <script type="module" src="js/communityForum.js"></script>
     <script type="module" src="js/consultation.js"></script>
+    <!-- landing.js will be added in a subsequent step -->
     <script type="module" src="script.js"></script>
 </body>
 </html>

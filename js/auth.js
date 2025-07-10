@@ -130,26 +130,41 @@ function renderForgotSuccessScreen() {
 // --- Event Listeners for Auth Flow ---
 function attachAuthEventListeners() {
     document.body.addEventListener('click', (e) => {
-        if (e.target.closest('#login-btn')) {
+        // Email Login Screen specific button
+        if (e.target.closest('#email-login-btn')) {
+            // Add basic validation for email/password fields if desired
+            const emailInput = document.querySelector('#screen-email-login input[type="email"]');
+            const passwordInput = document.querySelector('#screen-email-login input[type="password"]');
+            if (emailInput && emailInput.value && passwordInput && passwordInput.value) {
+                showToast("Iniciando sesión...");
+                setTimeout(() => {
+                    if(showScreenFunc) showScreenFunc('home');
+                }, 1500);
+            } else {
+                showToast("Por favor ingrese correo y contraseña.");
+            }
+        }
+
+        // Existing auth buttons (onboarding, register, verify, forgot)
+        if (e.target.closest('#login-btn')) { // This is the main login on original onboarding, may need adjustment if screen-onboarding is removed/changed
             showToast("Iniciando sesión...");
             setTimeout(() => {
-                showScreen('home');
-                // Main script will handle calling renderNextConsultation & renderTasks via screenRenderers
+                if(showScreenFunc) showScreenFunc('home');
             }, 1500);
         }
-        if (e.target.closest('#register-link')) {
-            e.preventDefault();
-            showScreen('register');
-        }
-        // Back buttons like #back-to-login-from-register are handled by navigation.js
+        // register-link is now on landing.js, handled there.
+        // if (e.target.closest('#register-link')) {
+        //     e.preventDefault();
+        //     if(showScreenFunc) showScreenFunc('register');
+        // }
 
         if (e.target.closest('#register-form-btn')) {
             const termsCheckbox = document.getElementById('terms-checkbox');
-            if (!termsCheckbox.checked) {
+            if (!termsCheckbox?.checked) {
                 showToast('Debe aceptar los términos y condiciones.');
                 return;
             }
-            showScreen('verifySignature');
+            if(showScreenFunc) showScreenFunc('verifySignature');
         }
         if (e.target.closest('#verify-signature-btn')) {
             const codeInput = document.getElementById('signature-code');
@@ -157,21 +172,66 @@ function attachAuthEventListeners() {
                 showToast('Por favor ingrese el código de 6 dígitos.');
                 return;
             }
-            showScreen('registerSuccess');
+            if(showScreenFunc) showScreenFunc('registerSuccess'); // This will trigger the timeout for home navigation
         }
-        if (e.target.closest('#forgot-password-link')) {
+        if (e.target.closest('#forgot-password-link')) { // This might be on the new email-login screen
             e.preventDefault();
-            showScreen('forgotPassword');
+            if(showScreenFunc) showScreenFunc('forgotPassword');
+        }
+        if (e.target.closest('#email-forgot-password-link')) { // Specific link from new email login screen
+             e.preventDefault();
+            if(showScreenFunc) showScreenFunc('forgotPassword');
         }
         if (e.target.closest('#recover-password-btn')) {
-            showScreen('forgotSuccess');
+            if(showScreenFunc) showScreenFunc('forgotSuccess');
         }
     });
 }
 
+
+export function renderEmailLoginScreen() {
+    if (!screenElements || !screenElements.emailLogin) return;
+    screenElements.emailLogin.innerHTML = `
+        <div class="w-full max-w-sm text-center p-6">
+            <button class="back-to-landing-btn text-gray-600 absolute top-4 left-4 p-2 hover:bg-gray-100 rounded-full">
+                <i class="ph-arrow-left text-2xl"></i>
+            </button>
+            <svg class="w-20 h-20 text-blue-600 mx-auto" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z" fill="currentColor"/></svg>
+            <h1 class="text-2xl font-bold text-slate-800 mt-4">Iniciar Sesión</h1>
+            <p class="text-slate-500 mt-1 mb-6">Ingresa con tu correo electrónico.</p>
+            <div class="space-y-4 text-left">
+                 <input type="email" placeholder="Correo electrónico" value="ana.perez@vitalis.ai" class="w-full p-3 border border-slate-300 rounded-lg bg-white">
+                 <input type="password" placeholder="Contraseña" value="************" class="w-full p-3 border border-slate-300 rounded-lg bg-white">
+            </div>
+            <a href="#" id="email-forgot-password-link" class="text-sm text-slate-600 mt-4 block text-center">Olvidé mi contraseña</a>
+            <button id="email-login-btn" class="btn-primary w-full mt-4">Iniciar Sesión</button>
+            <p class="text-xs text-slate-500 mt-6">
+                <button class="back-to-landing-btn font-semibold text-blue-600 hover:underline">Volver a opciones de ingreso</button>
+            </p>
+        </div>
+    `;
+    // Add listener for the new back button if not handled by global navigation
+    const backButton = screenElements.emailLogin.querySelector('.back-to-landing-btn');
+    if (backButton) {
+        backButton.addEventListener('click', (e) => {
+            e.preventDefault();
+            if(showScreenFunc) showScreenFunc('landing');
+        });
+    }
+     const backButtonBottom = screenElements.emailLogin.querySelector('p > .back-to-landing-btn');
+    if (backButtonBottom) {
+        backButtonBottom.addEventListener('click', (e) => {
+            e.preventDefault();
+            if(showScreenFunc) showScreenFunc('landing');
+        });
+    }
+}
+
+
 // Make auth screen renderers available to the main script if needed for the screenRenderers object
 export const authScreenRenderers = {
-    onboarding: renderOnboardingScreen,
+    onboarding: renderOnboardingScreen, // This might become obsolete or merged with emailLogin
+    emailLogin: renderEmailLoginScreen, // New
     register: renderRegisterScreen,
     verifySignature: renderVerifySignatureScreen,
     registerSuccess: renderRegisterSuccessScreen,

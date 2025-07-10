@@ -1,4 +1,4 @@
-import { initUIElements, showToast, showScreen as uiShowScreen, showModal, hideModal, animateValue, animateSlotMachine } from './js/ui.js';
+import { initUIElements, showToast as uiShowToast, showScreen as uiShowScreen, showModal, hideModal, animateValue, animateSlotMachine } from './js/ui.js';
 import { initNavigation } from './js/navigation.js';
 import { initAuth, authScreenRenderers } from './js/auth.js';
 import * as store from './js/store.js';
@@ -14,13 +14,14 @@ import { initProfileReferrals, renderReferralsScreen as referralsRenderScreen } 
 import { initProfileRewards, renderRewardsScreen as rewardsRenderScreen } from './js/profileRewards.js';
 import { initCommunityForum, renderCommunityForumScreen, renderForumTopicDetailScreen } from './js/communityForum.js';
 import { initConsultationFlow, renderWaitingRoomScreen, renderConsultationScreenActive, renderReviewSignScreen } from './js/consultation.js';
-
+import { initLanding } from './js/landing.js'; // Import initLanding
 
 document.addEventListener('DOMContentLoaded', () => {
     // --- Elements ---
     const screenElements = {
-        welcome: document.getElementById('screen-welcome'),
-        onboarding: document.getElementById('screen-onboarding'),
+        landing: document.getElementById('screen-landing'), // New landing screen
+        emailLogin: document.getElementById('screen-email-login'), // New email login screen
+        onboarding: document.getElementById('screen-onboarding'), // Kept for now, might be deprecated
         home: document.getElementById('screen-home'),
         agenda: document.getElementById('screen-agenda'),
         patients: document.getElementById('screen-patients'),
@@ -42,6 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
         registerSuccess: document.getElementById('screen-register-success'),
         forgotPassword: document.getElementById('screen-forgot-password'),
         forgotSuccess: document.getElementById('screen-forgot-success'),
+        // Note: screen-welcome is removed
     };
     const navItemElements = {
         home: document.getElementById('nav-home'),
@@ -57,29 +59,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
     initUIElements(screenElements, modalContainerElement, toastElement);
 
-    // --- RENDER FUNCTIONS (to be further modularized or that are very simple) ---
-    // MOVED: All major screen renderers to their respective modules.
+    // --- RENDER FUNCTIONS (mostly moved or very simple) ---
+    // renderWelcomeScreen is removed.
+    // Most other render functions are now imported from their respective modules and used in screenRenderers.
 
-    function renderWelcomeScreen() {
-        screenElements.welcome.innerHTML = `
-            <div class="flex flex-col items-center justify-center h-full animate-pulse">
-                <svg class="w-24 h-24 text-blue-600" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z" fill="currentColor"/></svg>
-                <h1 class="text-3xl font-bold text-gray-800 mt-4">Vitalis AI</h1>
-                <p class="text-gray-500">Su asistente médico inteligente</p>
-            </div>`;
-        setTimeout(() => {
-            const welcomeScreenElement = screenElements.welcome;
-            if (welcomeScreenElement) {
-                welcomeScreenElement.classList.add('fade-out');
-                welcomeScreenElement.addEventListener('animationend', () => {
-                    _showScreenWrapper('onboarding');
-                }, { once: true });
-            }
-        }, 2500);
-    }
+    // Example of a simple render function that might remain if not complex enough for its own file yet:
+    // function renderSimpleScreenTemplate(screenId, title) {
+    //     if (screenElements[screenId]) {
+    //         screenElements[screenId].innerHTML = `<div class="p-4"><h1 class="text-xl font-bold">${title}</h1><p>Content for ${title}...</p></div>`;
+    //     }
+    // }
 
     const screenRenderers = {
-        welcome: renderWelcomeScreen,
+        landing: null, // Static HTML, no JS render function needed
+        // welcome: renderWelcomeScreen, // Removed
         home: () => { homeRenderNextConsultation(); homeRenderTasks(); },
         agenda: agendaRenderAgenda,
         patients: renderPatientsScreen,
@@ -96,33 +89,34 @@ document.addEventListener('DOMContentLoaded', () => {
         waitingRoom: renderWaitingRoomScreen,
         consultation: renderConsultationScreenActive,
         reviewSign: renderReviewSignScreen,
-        ...authScreenRenderers
+        ...authScreenRenderers // This includes onboarding, emailLogin, register, verifySignature, etc.
     };
 
+    // This wrapper is crucial for passing all necessary context to uiShowScreen
     function _showScreenWrapper(screenName, data = null) {
         uiShowScreen(screenName, data, screenElements, navItemElements, headerElement, bottomNavElement, fabElement, screenRenderers);
     }
 
     // Initialize all modules
-    initNavigation(screenElements, navItemElements, headerElement, bottomNavElement, fabElement, screenRenderers);
-    initAuth(screenElements, navItemElements, headerElement, bottomNavElement, fabElement, screenRenderers);
-    initHome(); // screenElements already available via ui.js or passed if needed by home.js init
-    initAgenda(screenElements);
-    initPatients(screenElements, navItemElements, headerElement, bottomNavElement, fabElement, screenRenderers);
-    initProfile(screenElements);
-    initProfileFinancial(screenElements, _showScreenWrapper, screenRenderers);
-    initProfileDevelopment(screenElements);
-    initProfileSecurity(screenElements, _showScreenWrapper, screenRenderers);
-    initProfileSupport(screenElements);
-    initProfileReferrals(screenElements);
-    initProfileRewards(screenElements);
-    initCommunityForum(screenElements, _showScreenWrapper);
-    initConsultationFlow(screenElements, _showScreenWrapper, homeRenderNextConsultation, homeRenderTasks);
+    initNavigation(screenElements, navItemElements, headerElement, bottomNavElement, fabElement, screenRenderers, _showScreenWrapper); // Pass _showScreenWrapper
+    initAuth(screenElements, _showScreenWrapper, uiShowToast); // Pass _showScreenWrapper and uiShowToast
+    initHome(screenElements, _showScreenWrapper, uiShowToast); // Pass necessary functions if home needs to trigger navigation/toasts
+    initAgenda(screenElements, _showScreenWrapper);
+    initPatients(screenElements, navItemElements, headerElement, bottomNavElement, fabElement, screenRenderersFromMain /* This was 'screenRenderers', but should be more specific or passed as _showScreenWrapper */, _showScreenWrapper, uiShowToast);
+    initProfile(screenElements, _showScreenWrapper);
+    initProfileFinancial(screenElements, _showScreenWrapper, screenRenderers /* or specific renderers needed by financial */, uiShowToast);
+    initProfileDevelopment(screenElements, _showScreenWrapper);
+    initProfileSecurity(screenElements, _showScreenWrapper, screenRenderers, uiShowToast);
+    initProfileSupport(screenElements, _showScreenWrapper);
+    initProfileReferrals(screenElements, _showScreenWrapper, uiShowToast);
+    initProfileRewards(screenElements, _showScreenWrapper, uiShowToast);
+    initCommunityForum(screenElements, _showScreenWrapper, uiShowToast);
+    initConsultationFlow(screenElements, _showScreenWrapper, homeRenderNextConsultation, homeRenderTasks, uiShowToast);
+    initLanding(_showScreenWrapper, uiShowToast); // Initialize new landing module, pass only needed functions
 
 
     // --- Global Event Listeners (minimal, most should be in modules) ---
     document.body.addEventListener('click', (e) => {
-        // FAB and Online Toggle are global UI elements, their listeners can remain here or move to a dedicated global UI interaction module
         if (e.target.closest('#fab-ai')) {
             showModal(`
                 <div class="modal-overlay">
@@ -136,20 +130,14 @@ document.addEventListener('DOMContentLoaded', () => {
             const toggle = e.target.closest('#online-toggle');
             const indicator = toggle.querySelector('span');
             const statusText = document.getElementById('online-status-text');
-            toggle.classList.toggle('available');
+            toggle.classList.toggle('available'); // Assuming 'available' class drives bg-color via Tailwind
             if (toggle.classList.contains('available')) {
-                indicator.style.transform = 'translateX(22px)'; statusText.textContent = 'Disponible Ahora'; statusText.className = 'online-status-text available'; showToast('Ahora estás disponible');
+                indicator.style.transform = 'translateX(22px)'; statusText.textContent = 'Disponible Ahora'; statusText.className = 'online-status-text available'; uiShowToast('Ahora estás disponible');
             } else {
-                indicator.style.transform = 'translateX(4px)'; statusText.textContent = 'No Disponible'; statusText.className = 'online-status-text unavailable'; showToast('Ahora no estás disponible');
+                indicator.style.transform = 'translateX(4px)'; statusText.textContent = 'No Disponible'; statusText.className = 'online-status-text unavailable'; uiShowToast('Ahora no estás disponible');
             }
         }
-        // Other very generic global listeners could be here, but most specific interactions are now in modules.
     });
 
-    // --- Helper Functions (Consider moving to a utils.js or specific modules if not already) ---
-    // Most helpers like open...Modal, render...Items, simulate... are now in their respective modules.
-    // fetchAccountHolderName is in profileFinancial.js
-    // generatePDF is in patients.js
-
-    _showScreenWrapper('welcome');
+    _showScreenWrapper('landing'); // Show the new landing screen by default
 });
